@@ -9,11 +9,16 @@
 plugins {
     // Apply the java-library plugin for API and implementation separation.
     id 'java-library'
-    id "io.freefair.lombok" version "5.3.0"
+    id 'maven-publish'
+    id 'io.freefair.lombok' version '5.3.0'
 }
 
+group = 'com.margic.metro2'
+version = '0.0.1'
+
+
 ext {
-    lombokVersion = "1.18.16"
+    lombokVersion = '1.18.16'
 }
 
 repositories {
@@ -27,12 +32,6 @@ dependencies {
     // Use JUnit Jupiter Engine for testing.
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 
-    // This dependency is exported to consumers, that is to say found on their compile classpath.
-    api 'org.apache.commons:commons-math3:3.6.1'
-
-    // This dependency is used internally, and not exposed to consumers on their own compile classpath.
-    implementation 'com.google.guava:guava:29.0-jre'
-
 	compileOnly 'org.projectlombok:lombok:${lombokVersion}'
 	annotationProcessor 'org.projectlombok:lombok:{lombokVersion}'
 	
@@ -40,7 +39,57 @@ dependencies {
 	testAnnotationProcessor 'org.projectlombok:lombok:{lombokVersion}'    
 }
 
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = 'model'
+            from components.java
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+            pom {
+                name = 'Metro 2 Model'
+                description = 'Model object for Metro2 consumer credit reporting'
+                url = 'https://github.com/margic/metro2model'
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'margic'
+                        name = 'Paul Crofts'
+                        email = 'pmcrofts@margic.com'
+                    }
+                }
+            }
+        }
+    }
+}
+
+tasks.named('jar') {
+    manifest {
+        attributes('Implementation-Title': project.name,
+                   'Implementation-Version': project.version)
+    }
+    baseName 'metro2model'
+    into("META-INF/maven/$project.group/$project.name") {
+		from { generatePomFileForMavenJavaPublication }
+		rename ".*", "pom.xml"
+	}
+}
+
+
 tasks.named('test') {
     // Use junit platform for unit tests.
     useJUnitPlatform()
 }
+
