@@ -7,7 +7,6 @@ public class Trailer{
     private int recordWordDescriptor;
     private String recordIdentifier;
     private int totalBaseRecords;
-    private String reserved;
     private int totalStatusCodeDF;
     private int totalJ1Segments;
     private int totalJ2Segments;
