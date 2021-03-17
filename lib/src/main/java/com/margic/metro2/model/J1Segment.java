@@ -4,6 +4,12 @@ import java.util.Date;
 
 import lombok.Data;
 
+/**
+ * J1Segment
+ * Associated Consumer
+ * Same Address
+ */
+
 @Data
 public class J1Segment{
     private String segmentIdentifier;
